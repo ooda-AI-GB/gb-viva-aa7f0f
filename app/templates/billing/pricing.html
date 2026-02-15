@@ -1,35 +1,39 @@
 {% extends "layout/base.html" %}
 
 {% block content %}
-<div class="top-bar">
-    <h1>Pricing</h1>
-</div>
-
-<div class="pricing-grid">
-    <div class="plan-card">
-        <div class="plan-title">Free</div>
-        <div class="plan-price">$0 / month</div>
-        <ul class="features-list">
-            <li>Unlimited notes</li>
-            <li>Create, edit, delete</li>
-            <li>3 sample notes</li>
-            <li>Secure storage</li>
-        </ul>
-        <a href="/auth/login" class="btn btn-outline" style="width: 100%; display: block; text-align: center;">Get Started</a>
-    </div>
-
-    <div class="plan-card premium">
-        <div class="plan-title">Premium</div>
-        <div class="plan-price">$9 / month</div>
-        <ul class="features-list">
-            <li>Everything in Free</li>
-            <li>AI Summarization</li>
-            <li>AI Chat (Coming Soon)</li>
-            <li>Priority Support</li>
-        </ul>
-        <form action="/subscribe" method="post">
-            <button type="submit" class="btn btn-primary" style="width: 100%;">Subscribe</button>
-        </form>
+<div style="max-width: 800px; margin: 0 auto; text-align: center;">
+    <h1>Upgrade to Project Tracker Pro</h1>
+    <p style="color: var(--text-secondary); margin-bottom: 40px; font-size: 1.25rem;">Unlock the full potential of your project management workflow.</p>
+    
+    <div class="grid" style="grid-template-columns: repeat(2, 1fr); gap: 40px; text-align: left;">
+        <!-- Free Plan -->
+        <div class="card" style="border-top: 4px solid var(--text-secondary);">
+            <h2>Free</h2>
+            <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 20px;">$0 <span style="font-size: 1rem; color: var(--text-secondary); font-weight: 400;">/ month</span></div>
+            <ul style="list-style: none; margin-bottom: 30px; line-height: 2;">
+                <li>✓ Up to 3 projects</li>
+                <li>✓ Basic task board</li>
+                <li>✓ Milestone tracking</li>
+                <li>✓ Time logging</li>
+            </ul>
+            <a href="/auth/login" class="btn btn-secondary" style="width: 100%; justify-content: center;">Get Started</a>
+        </div>
+        
+        <!-- Premium Plan -->
+        <div class="card" style="border-top: 4px solid var(--primary); position: relative;">
+            <div style="position: absolute; top: -12px; right: 20px; background: var(--primary); color: white; padding: 4px 12px; border-radius: 99px; font-size: 0.875rem; font-weight: 600;">RECOMMENDED</div>
+            <h2>Premium</h2>
+            <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 20px;">$29 <span style="font-size: 1rem; color: var(--text-secondary); font-weight: 400;">/ month</span></div>
+            <ul style="list-style: none; margin-bottom: 30px; line-height: 2;">
+                <li>✓ Everything in Free</li>
+                <li>✓ Unlimited projects & tasks</li>
+                <li>✓ AI Project Insights (Gemini)</li>
+                <li>✓ Priority Support</li>
+            </ul>
+            <form action="/subscribe" method="POST">
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Subscribe</button>
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}

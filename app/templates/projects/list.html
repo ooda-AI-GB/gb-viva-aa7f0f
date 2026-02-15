@@ -1,0 +1,42 @@
+{% extends "layout/base.html" %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1>Projects</h1>
+    <a href="/projects/new" class="btn btn-primary">New Project</a>
+</div>
+
+<div style="margin-bottom: 20px; display: flex; gap: 10px;">
+    <a href="/projects" class="btn btn-secondary {% if not status_filter %}btn-primary{% endif %}" style="{% if not status_filter %}color: white; border: none;{% endif %}">All</a>
+    <a href="/projects?status_filter=active" class="btn btn-secondary {% if status_filter == 'active' %}btn-primary{% endif %}" style="{% if status_filter == 'active' %}color: white; border: none;{% endif %}">Active</a>
+    <a href="/projects?status_filter=planning" class="btn btn-secondary {% if status_filter == 'planning' %}btn-primary{% endif %}" style="{% if status_filter == 'planning' %}color: white; border: none;{% endif %}">Planning</a>
+    <a href="/projects?status_filter=completed" class="btn btn-secondary {% if status_filter == 'completed' %}btn-primary{% endif %}" style="{% if status_filter == 'completed' %}color: white; border: none;{% endif %}">Completed</a>
+</div>
+
+<div class="grid">
+    {% for item in projects %}
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <span class="badge badge-{{ item.project.status }}">{{ item.project.status|replace('_', ' ') }}</span>
+            <span class="badge badge-{{ item.project.priority }}">{{ item.project.priority }}</span>
+        </div>
+        <h3><a href="/projects/{{ item.project.id }}" style="text-decoration: none; color: var(--text-primary);">{{ item.project.name }}</a></h3>
+        <p style="color: var(--text-secondary); margin-bottom: 15px; height: 3em; overflow: hidden;">{{ item.project.description if item.project.description else 'No description' }}</p>
+        
+        <div style="margin-bottom: 5px; font-size: 0.875rem; display: flex; justify-content: space-between;">
+            <span>Progress</span>
+            <span>{{ item.progress }}%</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-value" style="width: {{ item.progress }}%;"></div>
+        </div>
+        
+        <div style="margin-top: 15px; font-size: 0.875rem; color: var(--text-secondary);">
+            Due: {{ item.project.due_date if item.project.due_date else 'No date' }}
+        </div>
+    </div>
+    {% else %}
+    <p>No projects found.</p>
+    {% endfor %}
+</div>
+{% endblock %}

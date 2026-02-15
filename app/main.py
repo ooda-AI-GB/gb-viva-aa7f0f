@@ -3,7 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 from app.database import engine, Base, get_db
 import app.routes as routes_module
-from app.routes import notes, ai, billing
+
 # Start imports for viv-auth and viv-pay
 from viv_auth import init_auth
 from viv_pay import init_pay
@@ -15,16 +15,16 @@ app = FastAPI()
 def health_check():
     return {"status": "ok"}
 
-# Root redirect
-@app.get("/")
-def root():
-    return RedirectResponse(url="/notes", status_code=303)
+# API Health (Mandatory)
+@app.get("/api/health")
+def api_health_check():
+    return {"status": "ok"}
 
 # Initialize Auth
-User, require_auth = init_auth(app, engine, Base, get_db, app_name="AI Notes")
+User, require_auth = init_auth(app, engine, Base, get_db, app_name="Project Tracker")
 
 # Initialize Pay
-create_checkout, get_customer, require_subscription = init_pay(app, engine, Base, get_db, app_name="AI Notes")
+create_checkout, get_customer, require_subscription = init_pay(app, engine, Base, get_db, app_name="Project Tracker")
 
 # Wrapper: chain auth -> subscription check so require_subscription gets user_id
 # viv-auth uses encrypted session cookie (viv_session), not a user_id cookie,
@@ -47,15 +47,18 @@ app.dependency_overrides[routes_module.get_active_subscription] = require_active
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # Include routers
-app.include_router(notes.router)
-app.include_router(ai.router)
-app.include_router(billing.router)
+app.include_router(routes_module.dashboard.router)
+app.include_router(routes_module.projects.router)
+app.include_router(routes_module.tasks.router)
+app.include_router(routes_module.milestones.router)
+app.include_router(routes_module.insights.router)
+app.include_router(routes_module.billing.router)
 
 # Startup event
 @app.on_event("startup")
 def startup_event():
     # Ensure all tables are created
-    # This includes User (from viv-auth), Billing tables (from viv-pay), and Note (from app.models)
-    # We must import app.models so Note is registered in Base
+    # This includes User (from viv-auth), Billing tables (from viv-pay), and Project/Task/etc (from app.models)
+    # We must import app.models so models are registered in Base
     import app.models
     Base.metadata.create_all(bind=engine)

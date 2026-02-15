@@ -1,0 +1,23 @@
+{% extends "layout/base.html" %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1>AI Insights</h1>
+</div>
+
+<div class="grid">
+    {% for insight in insights %}
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <span class="badge badge-medium">{{ insight.insight_type|replace('_', ' ') }}</span>
+            <span style="font-size: 0.75rem; color: var(--text-secondary);">{{ insight.generated_at.strftime('%Y-%m-%d') }}</span>
+        </div>
+        <h3 style="margin-bottom: 5px;">{{ insight.project.name }}</h3>
+        <p style="color: var(--text-secondary); height: 4em; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; margin-bottom: 15px;">{{ insight.content }}</p>
+        <a href="/insights/{{ insight.id }}" class="btn btn-secondary" style="width: 100%; justify-content: center;">View Full Insight</a>
+    </div>
+    {% else %}
+    <p>No insights generated yet. Go to a project to generate insights.</p>
+    {% endfor %}
+</div>
+{% endblock %}

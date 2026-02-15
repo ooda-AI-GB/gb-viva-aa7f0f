@@ -1,0 +1,83 @@
+{% extends "layout/base.html" %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1>Task Board</h1>
+</div>
+
+<div class="kanban-board">
+    {% for status, label in [('todo', 'To Do'), ('in_progress', 'In Progress'), ('review', 'Review'), ('done', 'Done'), ('blocked', 'Blocked')] %}
+    <div class="kanban-col" data-status="{{ status }}" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <div class="kanban-header">
+            <span>{{ label }}</span>
+            <span style="background: rgba(0,0,0,0.1); padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;">{{ tasks_by_status[status]|length }}</span>
+        </div>
+        
+        {% for task in tasks_by_status[status] %}
+        <div class="kanban-card priority-{{ task.priority }}" draggable="true" ondragstart="drag(event)" id="task-{{ task.id }}" data-id="{{ task.id }}" onclick="window.location='/tasks/{{ task.id }}'">
+            <div style="font-weight: 500; margin-bottom: 5px;">{{ task.title }}</div>
+            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 5px;">
+                {{ task.project.name if task.project else 'Unknown Project' }}
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">
+                    {% if task.assigned_to %}
+                    👤 {{ task.assigned_to[:10] }}
+                    {% endif %}
+                </div>
+                <div style="font-size: 0.75rem; font-weight: 600; color: var(--text-secondary);">
+                    {{ task.due_date.strftime('%b %d') if task.due_date else '' }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+function drag(ev) {
+    ev.dataTransfer.setData("text", ev.target.id);
+    ev.dataTransfer.setData("task_id", ev.target.dataset.id);
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("text");
+    var taskId = ev.dataTransfer.getData("task_id");
+    
+    // Find drop target (the column)
+    var target = ev.target;
+    while (!target.classList.contains('kanban-col')) {
+        target = target.parentElement;
+        if (!target) return; // Dropped outside
+    }
+    
+    var newStatus = target.dataset.status;
+    
+    // Move element visually immediately
+    var draggedElement = document.getElementById(data);
+    if (draggedElement) {
+        target.appendChild(draggedElement);
+    }
+    
+    // Send API request
+    fetch('/tasks/' + taskId + '/move', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus })
+    }).then(response => {
+        if (!response.ok) {
+            alert('Failed to update task status');
+            window.location.reload();
+        }
+    });
+}
+</script>
+{% endblock %}

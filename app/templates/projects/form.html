@@ -1,0 +1,68 @@
+{% extends "layout/base.html" %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <div style="margin-bottom: 20px;">
+        <a href="{{ '/projects/' ~ project.id if project else '/projects' }}" style="color: var(--text-secondary); text-decoration: none;">← Cancel</a>
+    </div>
+
+    <div class="card">
+        <h1>{{ 'Edit Project' if project else 'New Project' }}</h1>
+        <form action="{{ '/projects/' ~ project.id ~ '/edit' if project else '/projects/new' }}" method="POST">
+            <div class="form-group">
+                <label class="form-label">Project Name</label>
+                <input type="text" name="name" class="form-control" value="{{ project.name if project else '' }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea name="description" class="form-control" rows="4">{{ project.description if project else '' }}</textarea>
+            </div>
+            
+            <div class="grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-control">
+                        <option value="planning" {% if project and project.status == 'planning' %}selected{% endif %}>Planning</option>
+                        <option value="active" {% if project and project.status == 'active' %}selected{% endif %}>Active</option>
+                        <option value="on_hold" {% if project and project.status == 'on_hold' %}selected{% endif %}>On Hold</option>
+                        <option value="completed" {% if project and project.status == 'completed' %}selected{% endif %}>Completed</option>
+                        <option value="archived" {% if project and project.status == 'archived' %}selected{% endif %}>Archived</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Priority</label>
+                    <select name="priority" class="form-control">
+                        <option value="low" {% if project and project.priority == 'low' %}selected{% endif %}>Low</option>
+                        <option value="medium" {% if not project or project.priority == 'medium' %}selected{% endif %}>Medium</option>
+                        <option value="high" {% if project and project.priority == 'high' %}selected{% endif %}>High</option>
+                        <option value="critical" {% if project and project.priority == 'critical' %}selected{% endif %}>Critical</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="form-group">
+                    <label class="form-label">Start Date</label>
+                    <input type="date" name="start_date" class="form-control" value="{{ project.start_date if project and project.start_date else '' }}">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Due Date</label>
+                    <input type="date" name="due_date" class="form-control" value="{{ project.due_date if project and project.due_date else '' }}">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Budget ($)</label>
+                <input type="number" step="0.01" name="budget" class="form-control" value="{{ project.budget if project and project.budget else '' }}">
+            </div>
+            
+            <div style="margin-top: 30px;">
+                <button type="submit" class="btn btn-primary" style="width: 100%;">{{ 'Update Project' if project else 'Create Project' }}</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
